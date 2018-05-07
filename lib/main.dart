@@ -2,23 +2,24 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
+import './systspcdetail.dart';
 
 void main() {
   runApp(new MaterialApp(
     title: "DB Admin",
-    home: new home(),
+    home: new Home(),
   ));
 }
 
 String url = "http://mam.epizy.com/dbapps/systblspctoday.php";
 
-class home extends StatefulWidget {
+class Home extends StatefulWidget {
   @override
-  _homeState createState() => new _homeState();
+  _HomeState createState() => new _HomeState();
 }
 
-class _homeState extends State<home> {
-  Future<List> getData() async {
+class _HomeState extends State<Home> {
+  Future<List> getssystblspce() async {
     final res = await http.get(url);
     return json.decode(res.body);
   }
@@ -30,12 +31,12 @@ class _homeState extends State<home> {
           title: new Text("DB Admin"),
         ),
         body: new FutureBuilder<List>(
-          future: getData(),
+          future: getssystblspce(),
           builder: (context, sn) {
             if (sn.hasError) print(sn.error);
 
             return sn.hasData
-                ? ItemList(
+                ? new ItemList(
                     list: sn.data,
                   )
                 : new Center(
@@ -56,14 +57,19 @@ class ItemList extends StatelessWidget {
       itemCount: list == null ? 0 : list.length,
       itemBuilder: (context, i) {
         return new Container(
+          
           padding: const EdgeInsets.all(10.0),
           child: new GestureDetector(
-            onTap: () {},
+            onTap: ()=>Navigator.of(context).push(
+              new MaterialPageRoute(
+                builder: (BuildContext context)=> new SysTSpcDetail(list: list,index: i,)
+              )
+            ),
             child: new Card(
               child: new ListTile(
                 title: new Text("Table Space SYSTEM"),
                 leading: new Icon(Icons.storage),
-                subtitle: Text("${list[i]['percentage_used']}%"),
+                subtitle: new Text("${list[i]['percentage_used']}%"),
               ),
             ),
           ),
