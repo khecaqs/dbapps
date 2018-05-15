@@ -65,12 +65,14 @@ class ItemList extends StatelessWidget {
                 builder: (BuildContext context)=> new SysTSpcDetail(list: list,index: i,)
               )
             ),
-            child: new Card(
-              child: new ListTile(
+            child: new Column(
+              children: <Widget>[
+                  new ListTile(
                 title: new Text("Table Space SYSTEM"),
                 leading: new Icon(Icons.storage),
                 subtitle: new Text("${list[i]['percentage_used']}%"),
               ),
+              ], 
             ),
           ),
         );

@@ -1,6 +1,6 @@
 <?php
    include 'conn.php';
-   $queryResult=$connect->query("SELECT * FROM SYSTEM");
+   $queryResult=$connect->query("SELECT * FROM tblspace WHERE tsname = 'system'");
   
    $result=array();
    while($fetchData=$queryResult->fetch_assoc()) {
