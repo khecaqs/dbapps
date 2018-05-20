@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:dbapps/login/loganim.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/animation.dart';
@@ -7,6 +6,9 @@ import 'package:flutter/scheduler.dart';
 
 
 void main() => runApp(new DbApps());
+
+//final String user;
+//final String pass;
 
 class DbApps extends StatelessWidget {
   @override
@@ -27,13 +29,29 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   var statusClick = 0;
+  String msg='';
 
+  TextEditingController editingControllerUser;
+  TextEditingController editingControllerPass;
+
+  
   AnimationController animationControllerButton;
   
   @override
   void initState(){
+    editingControllerUser= new TextEditingController(text: '');
+    editingControllerPass= new TextEditingController(text: '');
+
     super.initState();
-    animationControllerButton = AnimationController(duration: Duration(seconds: 3),vsync: this);
+    animationControllerButton = AnimationController(duration: Duration(seconds: 3),vsync: this)
+    ..addStatusListener((status){
+      if(status == AnimationStatus.dismissed){
+        setState(() {
+                  statusClick=0;
+                  msg="Username or Password Incorrect";
+                });
+      } 
+    });
   }
   @override
   void dispose() {
@@ -43,11 +61,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     }
 
     Future<Null> _playAnimation() async{
+      try {
       await animationControllerButton.forward();
+      await animationControllerButton.reverse();
+      } on TickerCanceled{}
     }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -78,6 +100,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                         child: Column(
                           children: <Widget>[
                             TextField(
+                              controller: editingControllerUser,
                               decoration: InputDecoration(
                                   icon: Icon(
                                     Icons.person_outline,
@@ -89,6 +112,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                               padding: const EdgeInsets.all(10.0),
                             ),
                             TextField(
+                              controller: editingControllerPass,
                               decoration: InputDecoration(
                                   icon: Icon(
                                     Icons.lock_outline,
@@ -96,7 +120,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                   ),
                                   hintText: "Password"),
                             ),
-                            FlatButton(padding: const EdgeInsets.only(top: 220.0,bottom: 30.0),
+                            Text(msg, style: TextStyle(color: Colors.yellow,fontSize: 18.0),),
+                            FlatButton(padding: const EdgeInsets.only(top: 202.0,bottom: 30.0),
                             onPressed: null,
                             child: Text("Akuan? Sign Up here",
                             style: TextStyle(
@@ -112,15 +137,19 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     ],
                   ),
                   statusClick == 0
-                    ? new InkWell(
-                      onTap: (){
-                        setState(() {
-                        statusClick = 1;                          
-                        });
-                        _playAnimation();
-                      },
-                      child: new SignIn()) 
-                  : new StartAnimation(buttonController: animationControllerButton.view,),
+                  ? new InkWell(
+                    onTap: (){
+                      setState(() {
+                      statusClick = 1;                          
+                      });
+                      _playAnimation();
+                    },
+                    child: new SignIn()) 
+                  : new StartAnimation(
+                    buttonController: animationControllerButton.view,
+                    user: editingControllerUser.text,
+                    pass: editingControllerPass.text,
+                  ),
                 ],
               )
             ],
